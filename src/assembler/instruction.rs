@@ -23,9 +23,11 @@
 */
 
 pub struct Instruction {
-    op: u32,
-    fmt: u32,
-    mode: u32,
-    addr: u32,
-    instr: u32,
+    pub op: u32,
+    pub fmt: u32,
+    pub mode: u32,
+    pub addr: u32,
+    pub instr: u32,
 }
+
+impl Instruction {}

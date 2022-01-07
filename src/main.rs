@@ -1,8 +1,12 @@
+#![allow(dead_code)]
 
-mod instruction;
+mod assembler;
 
 fn main() {
     println!("SIC/XE Assembler");
     let hex = 0xFF;
     println!("{}", hex);
+
+    let asm = assembler::Assembler::new();
+    asm.assemble(String::from("./test.sic"));
 }
