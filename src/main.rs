@@ -8,5 +8,5 @@ fn main() {
     println!("{}", hex);
 
     let asm = assembler::Assembler::new();
-    asm.assemble(String::from("./test.sic"));
+    asm.assemble("./test.sic");
 }

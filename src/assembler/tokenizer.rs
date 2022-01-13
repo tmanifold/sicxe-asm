@@ -1,39 +1,15 @@
 // tokenizer.rs
 
-use std::fs::File;
-use std::io::{self, BufRead};
-use std::path::Path;
-
 pub struct Tokenizer;
 
 impl Tokenizer {
-    pub fn read(&self, name: String) {
-        let p = Path::new(&name);
-        println!("opening {}...", p.display());
-        let f = match File::open(&p) {
-            Err(why) => panic!("couldnt open {}: {}", p.display(), why),
-            Ok(f) => f,
-        };
-
-        // from https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
-
-        let lines = io::BufReader::new(f).lines();
-        for line in lines {
-            match line {
-                Err(why) => panic!("error reading file: {}: {}", p.display(), why),
-                Ok(line) => self.tokenize(&line),
-            };
-            //println!("{:?}", line);
-        }
-    }
-
-    pub fn tokenize(&self, line: &str) {
+    // split the given line into an array of tokens
+    pub fn tokenize<'a>(&self, line: &'a str) -> Vec<&'a str> {
         // strip comments
         let ln = self.strip_comments(line);
-        // split into tokens
-        for token in ln.split_whitespace() {
-            println!("tokens= {}", token);
-        }
+
+        // split into tokens and return
+        ln.split_whitespace().collect()
     }
 
     // looks for a dot character and deletes everything following on the line.
@@ -46,12 +22,6 @@ impl Tokenizer {
             },
         }
     }
-}
-
-#[test]
-fn test_read() {
-    let t = Tokenizer {};
-    t.read(String::from("test.sic"));
 }
 
 #[test]

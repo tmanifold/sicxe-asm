@@ -5,6 +5,9 @@ mod sicxe_op;
 mod tokenizer;
 
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::{self, BufRead};
+use std::path::Path;
 
 const WORD_SIZE: u8 = 3;
 
@@ -68,7 +71,33 @@ impl Assembler {
         }
     }
 
-    pub fn assemble(&self, file: String) {
-        self.tokenizer.read(file);
+    pub fn assemble(&self, file: &str) {
+        let p = Path::new(&file);
+        println!("opening {}...", p.display());
+        let f = match File::open(&p) {
+            Err(why) => panic!("couldnt open {}: {}", p.display(), why),
+            Ok(f) => f,
+        };
+
+        // from https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
+
+        let lines = io::BufReader::new(f).lines();
+        for line in lines {
+            match line {
+                Err(why) => panic!("error reading file: {}: {}", p.display(), why),
+                Ok(line) => println!("{:?}", self.tokenizer.tokenize(&line)),
+            };
+            //println!("{:?}", line);
+        }
+
+        // process tokens
+        // If tokens[2] is equal to empty string, then there is no label
+        // => tokens[0] is MNEM
+        // => tokens[1] is OPERAND
+        //
+        // If tokens[2] has content, all fields are used
+        // => tokens[0] is LABEL
+        // => tokens[1] is MNEM
+        // => tokens[2] is OPERAND
     }
 }
