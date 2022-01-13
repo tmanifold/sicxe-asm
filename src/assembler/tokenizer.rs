@@ -21,14 +21,30 @@ impl Tokenizer {
         for line in lines {
             match line {
                 Err(why) => panic!("error reading file: {}: {}", p.display(), why),
-                Ok(line) => println!("{}", line),
+                Ok(line) => self.tokenize(&line),
             };
             //println!("{:?}", line);
         }
     }
 
-    pub fn tokenize(&self) {
-        unimplemented!()
+    pub fn tokenize(&self, line: &str) {
+        // strip comments
+        let ln = self.strip_comments(line);
+        // split into tokens
+        for token in ln.split_whitespace() {
+            println!("tokens= {}", token);
+        }
+    }
+
+    // looks for a dot character and deletes everything following on the line.
+    pub fn strip_comments<'a>(&self, line: &'a str) -> &'a str {
+        match line.find('.') {
+            None => line,
+            Some(start) => match line.get(0..start) {
+                Some(v) => v,
+                None => panic!("Error getting substr from {}", line),
+            },
+        }
     }
 }
 
@@ -36,6 +52,21 @@ impl Tokenizer {
 fn test_read() {
     let t = Tokenizer {};
     t.read(String::from("test.sic"));
+}
+
+#[test]
+fn test_strip_comments() {
+    let s = "NOOP .COMMENT";
+    let t = Tokenizer {};
+    assert_eq!(t.strip_comments(&s), "NOOP ");
+}
+
+#[test]
+fn test_tokenize() {
+    let t = Tokenizer {};
+    let line = "TEST	START	1000";
+    let tokens = t.tokenize(&line);
+    assert_eq!(tokens, ["TEST", "START", "1000"]);
 }
 
 // #[cfg(test)]
