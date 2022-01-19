@@ -38,19 +38,3 @@ fn test_tokenize() {
     let tokens = t.tokenize(&line);
     assert_eq!(tokens, ["TEST", "START", "1000"]);
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//
-//     #[test]
-//     fn it_works() {
-//         assert_eq!(1 + 1, 2);
-//     }
-//
-//     #[test]
-//     fn test_read() {
-//         let t = Tokenizer;
-//         t.read("./test.sic");
-//     }
-// }

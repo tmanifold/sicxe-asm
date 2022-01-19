@@ -1,5 +1,7 @@
 // assembler.rs
 
+#![allow(non_snake_case)]
+
 mod instruction;
 mod sicxe_op;
 mod tokenizer;
@@ -71,6 +73,11 @@ impl Assembler {
         }
     }
 
+    pub fn init(&self) {
+        // initialize tables
+        // self.dtab.insert()
+    }
+
     pub fn assemble(&self, file: &str) {
         let p = Path::new(&file);
         println!("opening {}...", p.display());
@@ -83,21 +90,38 @@ impl Assembler {
 
         let lines = io::BufReader::new(f).lines();
         for line in lines {
-            match line {
+            let tokens = match line {
                 Err(why) => panic!("error reading file: {}: {}", p.display(), why),
-                Ok(line) => println!("{:?}", self.tokenizer.tokenize(&line)),
+                Ok(ref line) => self.tokenizer.tokenize(&line),
             };
-            //println!("{:?}", line);
-        }
 
-        // process tokens
-        // If tokens[2] is equal to empty string, then there is no label
-        // => tokens[0] is MNEM
-        // => tokens[1] is OPERAND
-        //
-        // If tokens[2] has content, all fields are used
-        // => tokens[0] is LABEL
-        // => tokens[1] is MNEM
-        // => tokens[2] is OPERAND
+            if tokens.is_empty() {
+                continue;
+            }
+            // process tokens
+            // If tokens.len() < 3 then there is no label
+            // => tokens[0] is MNEM
+            // => tokens[1] is OPERAND
+            //
+            // If tokens.len() == 3, all fields are used
+            // => tokens[0] is LABEL
+            // => tokens[1] is MNEM
+            // => tokens[2] is OPERAND
+
+            let (LABEL, MNEM, OPERAND) = match tokens.len() {
+                3 => (tokens[0], tokens[1], tokens[2]),
+                2 => ("", tokens[0], tokens[1]),
+                1 => ("", tokens[0], ""),
+                _ => panic!("Invalid assembly code: {:?}", &line),
+            };
+
+            println!("{} {} {}", LABEL, MNEM, OPERAND);
+        }
     }
 }
+
+// #[test]
+// fn test_assemble() {
+//     let a = Assembler::new();
+//     a.assemble("./sample/basic.txt");
+// }
